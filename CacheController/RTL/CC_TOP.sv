@@ -85,6 +85,8 @@ module CC_TOP
     
     wire    [31:0]  miss_addr_fifo_rdata_o;
     wire            miss_addr_fifo_empty_o;
+
+    wire            miss_addr_fifo_rden_i;
     CC_CFG u_cfg(
         .clk            (clk),
         .rst_n          (rst_n),
@@ -133,7 +135,7 @@ module CC_TOP
         .rst_n                  (rst_n),
         .full_o                 (),
         .afull_o                (miss_req_fifo_afull_o), 
-        .wren_i                 (hs_pulse_delayed_o), 
+        .wren_i                 (hs_pulse_delayed_o && miss_o), 
         .wdata_i                ({tag_delayed_o,index_delayed_o,offset_delayed_o}), 
         .empty_o                (miss_req_fifo_empty_o), 
         .aempty_o               (),
@@ -146,7 +148,7 @@ module CC_TOP
         .rst_n                  (rst_n),
         .full_o                 (),
         .afull_o                (miss_addr_fifo_afull_o), 
-        .wren_i                 (hs_pulse_delayed_o), 
+        .wren_i                 (hs_pulse_delayed_o && miss_o), 
         .wdata_i                ({tag_delayed_o,index_delayed_o,offset_delayed_o}), 
         .empty_o                (miss_addr_fifo_empty_o), 
         .aempty_o               (),
@@ -165,7 +167,7 @@ module CC_TOP
         .hit_flag_fifo_wren_i       (hs_pulse_delayed_o), 
         .hit_flag_fifo_wdata_i      (hit_o), 
         .hit_data_fifo_afull_o      (hit_data_fifo_afull_o), 
-        .hit_data_fifo_wren_i       (hs_pulse_delayed_o), 
+        .hit_data_fifo_wren_i       (hs_pulse_delayed_o && hit_o), 
         .hit_data_fifo_wdata_i      ({offset_delayed_o,rdata_data_i}), 
         .inct_rdata_o               (inct_rdata_o), 
         .inct_rlast_o               (inct_rlast_o), 
@@ -202,4 +204,8 @@ module CC_TOP
     assign mem_arvalid_o = !miss_req_fifo_empty_o;
 
     assign miss_req_fifo_rden_i = mem_arvalid_o && mem_arready_i;
+
+    // SRAM read prot
+    assign rden_o   = hs_pulse_o;
+    assign raddr_o  = index_i;
 endmodule

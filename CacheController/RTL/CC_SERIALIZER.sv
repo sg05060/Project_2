@@ -29,7 +29,7 @@ module CC_SERIALIZER
         if (!rst_n) begin
             index	<= 0;
         end
-        else if(rready_i && (!rlast)) begin
+        else if(rready_i && rvalid && (!rlast)) begin
 			index 	<= index_n;
 		end else begin
 			index	<= 0;
@@ -80,6 +80,6 @@ module CC_SERIALIZER
 	assign rvalid_o		= rvalid;
 	assign rdata_o		= rdata;
 	assign rlast_o		= rlast;
-	assign fifo_rden_o 	= rlast;
+	assign fifo_rden_o 	= rlast && !fifo_empty_i;
 
 endmodule

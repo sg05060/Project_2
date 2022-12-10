@@ -50,7 +50,7 @@ module CC_TAG_COMPARATOR
 		hit						= 1'b0;
 		miss					= 1'b0;
 		if (hs_pulse_delayed) begin
-			if (rdata_tag_i == tag_delayed) begin
+			if ((rdata_tag_i[17] == 1'b1) && (rdata_tag_i[16:0] == tag_delayed)) begin
 				hit 			= 1'b1;
 			end else begin
 				miss 			= 1'b1;

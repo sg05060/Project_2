@@ -30,7 +30,7 @@ module CC_DATA_FILL_UNIT
     // Fill the code here
     reg             [8:0]       waddr;
     reg             [17:0]      wdata_tag;
-    reg             [5:0]       offset;
+    reg             [2:0]       offset;
     reg                         wren, wren_n;
     
     reg             [511:0]     data_buffer;
@@ -40,7 +40,7 @@ module CC_DATA_FILL_UNIT
     always_ff @(posedge clk)
         if (!rst_n) begin
             cnt             <= 3'b0; 
-            data_buffer     <= 448'b0;
+            data_buffer     <= 512'b0;
             wren            <= 1'b0;
         end else if(mem_rvalid_i && mem_rready_i) begin
             wren            <= wren_n;
@@ -71,6 +71,9 @@ module CC_DATA_FILL_UNIT
                     data_buffer[63-:64] = mem_rdata_i;
                 end
             endcase
+        end else begin
+            cnt             <= 3'b0;
+            wren            <= 1'b0;
         end
         
 
@@ -79,7 +82,7 @@ module CC_DATA_FILL_UNIT
     begin
         waddr       = miss_addr_fifo_rdata_i[14-:9];
         wdata_tag   = {1'b1, miss_addr_fifo_rdata_i[31-:17]};
-        offset      = miss_addr_fifo_rdata_i[5-:6];
+        offset      = miss_addr_fifo_rdata_i[5-:3];
         
         wren_n      = wren;
         cnt_n       = cnt;

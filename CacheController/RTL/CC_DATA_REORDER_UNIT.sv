@@ -34,7 +34,7 @@ module CC_DATA_REORDER_UNIT
     localparam  HIT_FLAG_FIFO_AFULL_THRESHOLD           = 13;
     localparam  HIT_FLAG_FIFO_AEMPTY_THRESHOLD          = 0;
 
-    localparam  HIT_DATA_OFFSET_FIFO_WIDTH              = 32;
+    localparam  HIT_DATA_OFFSET_FIFO_WIDTH              = 518;
     localparam  HIT_DATA_OFFSET_FIFO_DEPTH              = 16;
     localparam  HIT_DATA_OFFSET_FIFO_AFULL_THRESHOLD    = 13;
     localparam  HIT_DATA_OFFSET_FIFO_AEMPTY_THRESHOLD   = 0;
@@ -76,20 +76,20 @@ module CC_DATA_REORDER_UNIT
 
         if(!hit_flag_fifo_empty_o) begin
             if(hit_flag_fifo_rdata_o) begin // hit data from Serializer
-                serial_rready_o    = 1'b1;
+                serial_rready_o    = 1'b1 && inct_rready_i;
                 //if(serial_rvalid_i)
                 inct_rdata  = serial_rdata_i;
                 inct_rlast  = serial_rlast_i;
-                inct_rvalid = serial_rvalid_i && serial_rready_o;
+                inct_rvalid = serial_rvalid_i;
                 if(inct_rlast && inct_rvalid && inct_rready_i)
                         hit_flag_fifo_rden_o = 1'b1;
             end
             else begin
-                    mem_rready = 1'b1;
+                    mem_rready = 1'b1 && inct_rready_i;
                 //if(mem_rvalid_i) begin
                     inct_rdata  = mem_rdata_i;
                     inct_rlast  = mem_rlast_i;
-                    inct_rvalid = (mem_rready && mem_rvalid_i);
+                    inct_rvalid = (mem_rvalid_i);
                     if(inct_rlast && inct_rvalid && inct_rready_i)
                         hit_flag_fifo_rden_o = 1'b1;
                 //end
